@@ -1,5 +1,5 @@
 /**
- * @file   camera_to_world_tf_broadcaster.cpp
+ * @file   cameraToWorld.cpp
  * @Author Joseph Shepley jls2303@columbia.edu
  * @date   December, 2016
  * @brief  publishes transform from the base of the robot to the Kinect camera
@@ -15,7 +15,7 @@ using namespace std;
 
 
 int main(int argc, char** argv){
-  ros::init(argc, argv, "camera_to_world_tf_broadcaster");
+  ros::init(argc, argv, "cameraToWorld");
   ros::NodeHandle node;
 
   tf::TransformBroadcaster br;
@@ -23,7 +23,6 @@ int main(int argc, char** argv){
   vector<double> tfvector;
 
   //read from calibration file, store tf in vector
-  //std::ifstream infile("../../../src/Perception/camera_to_world_tf/src/kinect_calibration.txt");      
   std::ifstream infile("kinect_calibration.txt");  
   double num;
   int i=0;
