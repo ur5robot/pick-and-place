@@ -335,6 +335,42 @@
       <child link="${prefix}tool0"/>
     </joint>
 
+    
+    <!-- 
+      ******************************
+      Not from the original urdf
+      ******************************
+      Adding calibration board here 
+    -->
+    <link name="${prefix}calibrationboard">
+      <visual>
+        <geometry>
+          <box size="0.25 0.33 0.005">
+        </geometry>
+        <material name="LightGrey">
+          <color rgba="0.7 0.7 0.7 1.0"/>
+        </material>
+      </visual>
+      <collision>
+        <geometry>
+          <box size="0.25 0.33 0.005">
+        </geometry>
+      </collision>
+    </link>
+
+    <!-- Adding fixed link of calibration board here -->
+    <link name="${prefix}calibrationboard"/>
+    <joint name="${prefix}tool0-calibrationboard_fixed_joint" type="fixed">
+      <origin xyz="0 0 0.1" rpy="0 0 0"/>
+      <parent link="${prefix}tool0"/>
+      <child link="${prefix}calibrationboard"/>
+    </joint>
+     <!-- 
+      ******************************
+      This is the end of my edits
+      ******************************
+    -->
+
 
   </xacro:macro>
 </robot>
