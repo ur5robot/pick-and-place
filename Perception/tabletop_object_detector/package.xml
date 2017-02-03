@@ -1,0 +1,51 @@
+<package>
+  <name>tabletop_object_detector</name>
+  <version>0.0.1</version>
+  <description>Performs object segmentation and simple object recognition for
+    constrained scenes.</description>
+  <maintainer email="ciocarlie@google.com">Marius Muja and Matei Ciocarlie</maintainer>
+
+  <license>BSD</license>
+
+  <url type="website">http://ros.org/wiki/object_detector</url>
+
+  <author>Marius Muja and Matei Ciocarlie</author>
+
+  <!-- Dependencies which this package needs to build itself. -->
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <!-- Dependencies needed to compile this package. -->
+  <build_depend>boost</build_depend>
+  <build_depend>cmake_modules</build_depend>
+  <build_depend>eigen</build_depend>
+  <build_depend>eigen_stl_containers</build_depend>
+  <build_depend>geometry_msgs</build_depend>
+  <build_depend>household_objects_database_msgs</build_depend>
+  <build_depend>message_generation</build_depend>
+  <build_depend>moveit_core</build_depend>
+  <build_depend>pcl_ros</build_depend>
+  <build_depend>pcl_conversions</build_depend>
+  <build_depend>roscpp</build_depend>
+  <build_depend>sensor_msgs</build_depend>
+  <build_depend>shape_msgs</build_depend>
+  <build_depend>std_msgs</build_depend>
+  <build_depend>tf</build_depend>
+  <build_depend>visualization_msgs</build_depend>
+
+  <!-- Dependencies needed after this package is compiled. -->
+  <run_depend>boost</run_depend>
+  <run_depend>eigen</run_depend>
+  <run_depend>eigen_stl_containers</run_depend>
+  <run_depend>geometry_msgs</run_depend>
+  <run_depend>household_objects_database_msgs</run_depend>
+  <run_depend>message_runtime</run_depend>
+  <run_depend>moveit_core</run_depend>
+  <run_depend>pcl_ros</run_depend>
+  <run_depend>pcl_conversions</run_depend>
+  <run_depend>roscpp</run_depend>
+  <run_depend>sensor_msgs</run_depend>
+  <run_depend>shape_msgs</run_depend>
+  <run_depend>std_msgs</run_depend>
+  <run_depend>tf</run_depend>
+  <run_depend>visualization_msgs</run_depend>
+</package>
