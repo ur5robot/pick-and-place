@@ -29,3 +29,8 @@ Grasp[] grasps
 
 # whether an error occurred
 GraspPlanningErrorCode error_code
+
+---
+
+# grasps planned so far
+Grasp[] grasps
