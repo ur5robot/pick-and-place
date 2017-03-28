@@ -11,7 +11,6 @@ Panels:
         - /PointCloud21
         - /TF1/Frames1
         - /Marker1
-        - /Marker1/Status1
         - /Marker1/Namespaces1
         - /MarkerArray1
         - /Marker2
@@ -165,7 +164,7 @@ Visualization Manager:
         Scene Alpha: 1
         Scene Color: 50; 230; 50
         Scene Display Time: 0.2
-        Show Scene Geometry: false
+        Show Scene Geometry: true
         Voxel Coloring: Z-Axis
         Voxel Rendering: Occupied Voxels
       Scene Robot:
@@ -271,22 +270,10 @@ Visualization Manager:
           Value: true
         base_link:
           Value: false
-        camera_depth_frame:
-          Value: true
-        camera_depth_optical_frame:
-          Value: true
-        camera_link:
-          Value: true
-        camera_rgb_frame:
-          Value: true
-        camera_rgb_optical_frame:
-          Value: true
         ee_link:
           Value: false
         forearm_link:
           Value: false
-        object_frame:
-          Value: true
         shoulder_link:
           Value: false
         tool0:
@@ -303,8 +290,6 @@ Visualization Manager:
           Value: false
         wrist_3_link:
           Value: false
-        wrist_frame:
-          Value: true
       Marker Scale: 1
       Name: TF
       Show Arrows: true
@@ -326,16 +311,6 @@ Visualization Manager:
                           {}
                         tool0:
                           {}
-          camera_link:
-            camera_depth_frame:
-              camera_depth_optical_frame:
-                {}
-            camera_rgb_frame:
-              camera_rgb_optical_frame:
-                {}
-          object_frame:
-            wrist_frame:
-              {}
       Update Interval: 0
       Value: true
     - Class: rviz/Marker
@@ -359,8 +334,7 @@ Visualization Manager:
       Marker Topic: /grasp_markers
       Name: Marker
       Namespaces:
-        bounding box: true
-        grasps: true
+        {}
       Queue Size: 100
       Value: true
     - Class: rviz/Marker
@@ -368,7 +342,7 @@ Visualization Manager:
       Marker Topic: /point_cluster_grasp_planner_markers
       Name: Marker
       Namespaces:
-        gripper_model: true
+        {}
       Queue Size: 100
       Value: true
   Enabled: true
@@ -386,36 +360,36 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 0.848772
+      Distance: 3.14037
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.06
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 0.346522
-        Y: -0.0450282
-        Z: 0.0397102
+        X: 0.069042
+        Y: 0.175034
+        Z: 0.463816
       Name: Current View
       Near Clip Distance: 0.01
-      Pitch: 0.130204
+      Pitch: 0.629797
       Target Frame: world
       Value: Orbit (rviz)
-      Yaw: 0.0904181
+      Yaw: 0.320422
     Saved: ~
 Window Geometry:
   Displays:
-    collapsed: true
-  Height: 1028
+    collapsed: false
+  Height: 1056
   Help:
     collapsed: false
-  Hide Left Dock: true
+  Hide Left Dock: false
   Hide Right Dock: false
   Motion Planning:
-    collapsed: true
-  QMainWindow State: 000000ff00000000fd0000000100000000000002ab000003dcfc0200000006fb000000100044006900730070006c006100790073000000002800000171000000f300fffffffb0000000800480065006c00700000000342000000bb0000008100fffffffb0000000a00560069006500770073000000030100000101000000bd00fffffffb0000000c00430061006d00650072006100000002ff000001610000000000000000fb0000001e004d006f00740069006f006e00200050006c0061006e006e0069006e0067000000019f00000265000001c300fffffffb0000000a00560069006500770073000000029e000000b0000000bd00ffffff0000039f000003c000000001000000020000000100000002fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+    collapsed: false
+  QMainWindow State: 000000ff00000000fd0000000100000000000002b1000003dafc0200000006fb000000100044006900730070006c006100790073010000002800000171000000dd00fffffffb0000000800480065006c00700000000342000000bb0000007600fffffffb0000000a00560069006500770073000000030100000101000000b000fffffffb0000000c00430061006d00650072006100000002ff000001610000000000000000fb0000001e004d006f00740069006f006e00200050006c0061006e006e0069006e0067010000019f00000263000001cc00fffffffb0000000a00560069006500770073000000029e000000b0000000b000ffffff00000488000003da00000001000000020000000100000002fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
   Views:
     collapsed: false
-  Width: 927
-  X: 982
-  Y: 14
+  Width: 1855
+  X: 65
+  Y: 24

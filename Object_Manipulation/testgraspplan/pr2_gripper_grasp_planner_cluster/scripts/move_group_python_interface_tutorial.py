@@ -73,18 +73,18 @@ def move_group_python_interface_tutorial():
   ## to one group of joints.  In this case the group is the joints in the left
   ## arm.  This interface can be used to plan and execute motions on the left
   ## arm.
-  group = moveit_commander.MoveGroupCommander("left_arm")
+  group = moveit_commander.MoveGroupCommander("manipulator")
 
 
   ## We create this DisplayTrajectory publisher which is used below to publish
   ## trajectories for RVIZ to visualize.
   display_trajectory_publisher = rospy.Publisher(
                                       '/move_group/display_planned_path',
-                                      moveit_msgs.msg.DisplayTrajectory)
+                                      moveit_msgs.msg.DisplayTrajectory, queue_size=10)
 
   ## Wait for RVIZ to initialize. This sleep is ONLY to allow Rviz to come up.
   print "============ Waiting for RVIZ..."
-  rospy.sleep(10)
+  rospy.sleep(1)
   print "============ Starting tutorial "
 
   ## Getting Basic Information
@@ -114,9 +114,9 @@ def move_group_python_interface_tutorial():
   print "============ Generating plan 1"
   pose_target = geometry_msgs.msg.Pose()
   pose_target.orientation.w = 1.0
-  pose_target.position.x = 0.7
-  pose_target.position.y = -0.05
-  pose_target.position.z = 1.1
+  pose_target.position.x = 0
+  pose_target.position.y = .2
+  pose_target.position.z = .9
   group.set_pose_target(pose_target)
 
   ## Now, we call the planner to compute the plan
@@ -157,6 +157,8 @@ def move_group_python_interface_tutorial():
   # Uncomment below line when working with a real robot
   group.go(wait=True)
 
+
+  """
   ## Planning to a joint-space goal 
   ## ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
   ##
@@ -228,6 +230,7 @@ def move_group_python_interface_tutorial():
   ## When finished shut down moveit_commander.
   moveit_commander.roscpp_shutdown()
 
+  """
   ## END_TUTORIAL
 
   print "============ STOPPING"
