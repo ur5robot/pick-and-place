@@ -18,6 +18,10 @@ find_package(catkin REQUIRED COMPONENTS
   tf
   visualization_msgs
   message_generation
+  sys
+  copy
+  moveit_commander
+  moveit_msgs
 )
 
 ## System dependencies are found with CMake's conventions
