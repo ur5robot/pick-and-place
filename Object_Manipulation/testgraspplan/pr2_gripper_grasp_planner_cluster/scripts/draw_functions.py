@@ -260,7 +260,9 @@ class DrawFunctions():
             x_end = list(mat[:,0][0:3]*.05*length_fact + scipy.array(start))    
             y_end = list(mat[:,1][0:3]*.02*length_fact + scipy.array(start))
             marker.id = grasp_num*3
+            #draw direction of approach arrow
             marker.points = [Point(*start), Point(*x_end)]
+            print "marker points", marker.points
             marker.color.r = 1.0
             marker.color.g = 0.0
             marker.color.b = 0.0

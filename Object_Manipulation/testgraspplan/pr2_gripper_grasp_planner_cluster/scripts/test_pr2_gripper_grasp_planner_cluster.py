@@ -27,6 +27,7 @@ import time
 import draw_functions
 #from object_manipulator.convert_functions import *
 import convert_functions
+from geometry_msgs.msg import PoseStamped, Pose, Point, Quaternion
 
 ##convert a Pose message to a 4x4 scipy matrix
 def pose_to_mat(pose):
@@ -170,6 +171,13 @@ def call_find_cluster_bounding_box(cluster):
     else:
         return (None, None)
 
+def selected_grasp_publisher(pose):
+    pub = rospy.Publisher('selected_grasp', Pose, queue_size=10)
+    rate = rospy.Rate(10) # loops at frequency of 10hz
+    while not rospy.is_shutdown():
+        rospy.loginfo("publishing selected grasp")
+        pub.publish(pose)
+        rate.sleep()
 
 if __name__ == "__main__":
 
@@ -227,7 +235,7 @@ if __name__ == "__main__":
 
                 #ask the grasp planner to evaluate the grasps
                 probs = call_evaluate_point_cluster_grasps(cluster, grasps)
-                #print "new probs:     ", pplist(probs)
+                print "new probs:     ", probs
                 #print '\n'.join([ppmat(pose_to_mat(grasp_pose)) for grasp_pose in grasp_poses])
 
                 #draw the resulting grasps (all at once, or one at a time)
@@ -236,10 +244,26 @@ if __name__ == "__main__":
                 c = raw_input()
                 if c == 'p':
                     #for (pregrasp_pose, grasp_pose) in zip(pregrasp_poses, grasp_poses):
-                    #    draw_functions.draw_grasps([pregrasp_pose, grasp_pose], cluster.header.frame_id, pause = 1)
+                     #   draw_functions.draw_grasps([pregrasp_pose, grasp_pose], cluster.header.frame_id, pause = 1)
                     draw_functions.draw_grasps(grasp_poses, cluster.header.frame_id, pause = 1)
                 else:
                     draw_functions.draw_grasps(grasp_poses, cluster.header.frame_id, pause = 0)
+
+                #find the pose with highest success probability
+                maxProbIndex=probs.index(max(probs))
+                print "index of best grasp =", maxProbIndex
+                
+                #get the Pose of the best grasp
+                best_grasp_pose=grasps[maxProbIndex].grasp_pose.pose
+                print best_grasp_pose
+
+                #publish best_grasp_pose
+                try:
+                	selected_grasp_publisher(best_grasp_pose)
+                except rospy.ROSInterruptException:
+                	pass
+                	
+
                 print "done drawing grasps, press enter to continue"
                 raw_input()
 
