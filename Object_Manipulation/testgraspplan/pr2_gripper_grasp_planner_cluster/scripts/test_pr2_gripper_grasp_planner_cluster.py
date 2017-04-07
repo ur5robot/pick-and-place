@@ -25,7 +25,7 @@ import numpy
 import scipy
 import time
 #import object_manipulator.draw_functions as draw_functions
-import draw_functions
+import draw_functions as df
 #from object_manipulator.convert_functions import *
 import convert_functions
 from geometry_msgs.msg import PoseStamped, Pose, Point, Quaternion
@@ -178,7 +178,7 @@ def handle_selected_grasp(req):
 
     tf_broadcaster = tf.TransformBroadcaster()
     tf_listener = tf.TransformListener()
-    draw_functions = draw_functions.DrawFunctions('grasp_markers')
+    draw_functions = df.DrawFunctions('grasp_markers')
 
     #set params for planner (change to try different settings)
     call_set_params(overhead_grasps_only = False, side_grasps_only = False, include_high_point_grasps = False, pregrasp_just_outside_box = False, backoff_depth_steps = 1)
@@ -240,11 +240,11 @@ def handle_selected_grasp(req):
                 draw_functions.draw_grasps(grasp_poses, cluster.header.frame_id, pause = 1)
                 print "enter the number of the desired pose corresponding to the order it was displayed"
                 print "i.e. press 1 for first grasp, 2 for second grasp, ..."
-                pose_id = raw_input()
+                pose_id = input()
                 while pose_id < 0 or pose_id >= len(grasps):
                     print "invalid input. please select a number between 0 and %d" % len(grasps) - 1
-                    pose_id = raw_input()
-                best_grasp_pose = grasps[pose_id]
+                    pose_id = input()
+                best_grasp_pose = grasps[pose_id].grasp_pose.pose
 
             else:
                 #find the pose with highest success probability
@@ -262,7 +262,8 @@ def handle_selected_grasp(req):
             draw_functions.clear_grasps(num = 1000)
 
             #publish best_grasp_pose
-            return SelectedGraspResponse(best_grasp_pose)  
+            print "sent."
+            return GraspPoseResponse(best_grasp_pose)  
             '''
             print best_grasp_pose
             try:
@@ -278,6 +279,8 @@ if __name__ == "__main__":
     rospy.init_node('test_point_cluster_grasp_planner', anonymous=True)
     #Service() input parameters: service name, srv type name, request handler name
     rospy.Service('selected_grasp', GraspPose, handle_selected_grasp)
+    print "Ready to send selected grasp"
+    rospy.spin()
 
 
 '''

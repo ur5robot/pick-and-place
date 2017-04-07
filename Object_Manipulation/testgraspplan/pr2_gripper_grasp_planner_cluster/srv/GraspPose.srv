@@ -1,0 +1,5 @@
+
+---
+
+#the pose of the box frame
+geometry_msgs/Pose pose

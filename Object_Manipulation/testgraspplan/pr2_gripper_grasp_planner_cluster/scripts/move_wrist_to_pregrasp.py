@@ -34,7 +34,7 @@
 #
 # Author: Acorn Pooley
 
-## BEGIN_SUB_TUTORIAL imports
+## Current Authors: Joseph Shepey, Carol Jung
 ##
 ## To use the python interface to move_group, import the moveit_commander
 ## module.  We also import rospy and some messages that we will use.
@@ -43,24 +43,26 @@ import copy
 import rospy
 import moveit_commander
 import moveit_msgs.msg
-#import geometry_msgs.msg 
+import tf.transformations
+import scipy
 from geometry_msgs.msg import PoseStamped, Point, Quaternion, Pose 
 from std_msgs.msg import String
+from pr2_gripper_grasp_planner_cluster.srv import GraspPose, GraspPoseRequest
 
-from pr2_gripper_grasp_planner_cluster.srv import pose.srv
 
-
-def selected_grasp_callback(pose):
-  rospy.loginfo(rospy.get_caller_id() + "I heard %s", )
+def plan_movement(pose, group, robot, dtp):
 
   ## Planning to a Pose goal
   print "============ Generating plan"
+  print pose
   pose_target = Pose() #geometry_msgs.msg.Pose()
   pose_target.orientation.w =  pose.orientation.w # 1.0
   pose_target.position.x = pose.position.x # 0
   pose_target.position.y = pose.position.y # .2
   pose_target.position.z = pose.position.z # .9
   group.set_pose_target(pose_target)
+  #group.max_velocity_scaling_factor(0.1)
+  #group.max_acceleration_scaling_factor(0.1)
 
   ## Now, we call the planner to compute the plan
   ## and visualize it if successful
@@ -69,7 +71,7 @@ def selected_grasp_callback(pose):
   plan = group.plan()
 
   print "============ Waiting while RVIZ displays pose..."
-  rospy.sleep(5)
+  rospy.sleep(2)
 
  
   ## You can ask RVIZ to visualize a plan (aka trajectory) for you.  But the
@@ -80,14 +82,42 @@ def selected_grasp_callback(pose):
 
   display_trajectory.trajectory_start = robot.get_current_state()
   display_trajectory.trajectory.append(plan)
-  display_trajectory_publisher.publish(display_trajectory);
+  dtp.publish(display_trajectory);
 
   print "============ Waiting while pose is visualized (again)..."
-  rospy.sleep(5)
+  rospy.sleep(1)
 
   ## Moving to a pose goal
-  group.go(wait=True)
+  print "Press y to move robot to goal state. Press any other key to exit."
+  if raw_input() == 'y':
+    group.go(wait=True)
+    print("SUCCESS: Wrist is in pregrasp position")
 
+
+def get_selected_grasp():
+  rospy.wait_for_service('selected_grasp')
+  print "Ready to receive selected grasp"
+  try:
+      selected_grasp = rospy.ServiceProxy('selected_grasp', GraspPose)
+      resp1 = selected_grasp()
+      print "Received."
+      return resp1.pose
+  except rospy.ServiceException, e:
+      print "Service call failed: %s"%e
+
+
+def compute_pregrasp(pose):
+  DISTANCE_FROM_GRASP_POSE = -0.10 #back the pre-grasp up 10 cm from goal grasp pose
+  orientation = pose.orientation
+  quat = [orientation.x, orientation.y, orientation.z, orientation.w]
+  mat = tf.transformations.quaternion_matrix(quat)
+  start = [pose.position.x, pose.position.y, pose.position.z]
+  pregrasp_poseList = list(mat[:,0][0:3]*DISTANCE_FROM_GRASP_POSE + scipy.array(start))
+  print(pregrasp_poseList)
+  pose.position.x = pregrasp_poseList[0]
+  pose.position.y = pregrasp_poseList[1]
+  pose.position.z = pregrasp_poseList[2]
+  return pose
 
 
 def move_wrist_to_pregrasp():
@@ -147,7 +177,9 @@ def move_wrist_to_pregrasp():
   #rospy.spin() # keeps python from exiting until this node is stopped
 
 
-
+  grasp_pose=get_selected_grasp()  #get best pre-grasp pose
+  pregrasp_pose=compute_pregrasp(grasp_pose)
+  plan_movement(pregrasp_pose, group, robot, display_trajectory_publisher) 
 
   moveit_commander.roscpp_shutdown()
 

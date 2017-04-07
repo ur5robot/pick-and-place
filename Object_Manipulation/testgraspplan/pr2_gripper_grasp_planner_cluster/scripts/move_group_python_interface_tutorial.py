@@ -155,7 +155,9 @@ def move_group_python_interface_tutorial():
   ## and report success on execution of a trajectory.
 
   # Uncomment below line when working with a real robot
-  group.go(wait=True)
+  print "Press y to move robot to goal state. Press any other key to exit."
+  if raw_input() == 'y':
+    group.go(wait=True)
 
 
   """

@@ -78,6 +78,7 @@ find_package(catkin REQUIRED COMPONENTS
    SetPointClusterGraspParams.srv
    FindClusterBoundingBox.srv
    FindClusterBoundingBox2.srv
+   GraspPose.srv
  )
 
 ## Generate actions in the 'action' folder
