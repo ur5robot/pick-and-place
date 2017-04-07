@@ -179,6 +179,7 @@ def selected_grasp_publisher(pose):
         pub.publish(pose)
         rate.sleep()
 
+'''
 if __name__ == "__main__":
 
     #initialize the node, tf listener and broadcaster, and rviz drawing helper class
@@ -275,3 +276,101 @@ if __name__ == "__main__":
         else:
             continue
         break
+'''
+
+
+if __name__ == "__main__":
+
+    #initialize the node, tf listener and broadcaster, and rviz drawing helper class
+    rospy.init_node('test_point_cluster_grasp_planner', anonymous=True)
+    tf_broadcaster = tf.TransformBroadcaster()
+    tf_listener = tf.TransformListener()
+    draw_functions = draw_functions.DrawFunctions('grasp_markers')
+
+    #set params for planner (change to try different settings)
+    call_set_params(overhead_grasps_only = False, side_grasps_only = False, include_high_point_grasps = False, pregrasp_just_outside_box = False, backoff_depth_steps = 1)
+
+    #call the tabletop object detector to detect clusters on the table
+    (table, clusters) = call_object_detector()
+    #print "table:\n", table
+
+    #keep going until the user says to quit (or until Ctrl-C is pressed)
+    if (not rospy.is_shutdown()):
+
+        #for each cluster in view in turn
+        for cluster in clusters:
+            draw_functions.clear_grasps(num=1000)
+
+            #get the bounding box for this cluster and draw it in blue
+            (box_pose, box_dims) = call_find_cluster_bounding_box(cluster)
+            if box_pose == None:
+                continue
+            box_mat = pose_to_mat(box_pose.pose)
+            box_ranges = [[-box_dims.x/2, -box_dims.y/2, -box_dims.z/2],
+                          [box_dims.x/2, box_dims.y/2, box_dims.z/2]]
+            draw_functions.draw_rviz_box(box_mat, box_ranges, 'base_link', \
+                                         ns = 'bounding box', \
+                                         color = [0,0,1], opaque = 0.25, duration = 60)
+            
+
+            draw_functions.clear_rviz_points('grasp_markers')
+
+            #call the grasp planner (both the service and the action in turn)
+            grasps = call_plan_point_cluster_grasp(cluster)
+            grasps = call_plan_point_cluster_grasp_action(cluster)
+            grasp_poses = [grasp.grasp_pose for grasp in grasps]
+            #pregrasp_poses = [grasp.pre_grasp_pose for grasp in grasps]
+
+            #print the returned success probs
+            original_probs = [grasp.grasp_quality for grasp in grasps]
+            #print "original probs:", pplist(original_probs)
+
+            #zero out the original success probabilities
+            for grasp in grasps:
+                grasp.grasp_quality = 0
+            raw_input('press enter to evalute returned grasps')
+
+            #ask the grasp planner to evaluate the grasps
+            probs = call_evaluate_point_cluster_grasps(cluster, grasps)
+            print "new probs:     ", probs
+            #print '\n'.join([ppmat(pose_to_mat(grasp_pose)) for grasp_pose in grasp_poses])
+
+            #draw the resulting grasps (all at once, or one at a time)
+            print "number of grasps returned:", len(grasps)
+            print "press p to visualize and select pre-grasp pose, or enter to select one with highest probability"
+            #print "drawing grasps: press p to pause after each one in turn, enter to show all grasps at once"
+            best_grasp_pose = Pose()
+            c = raw_input()
+            if c == 'p':
+                #for (pregrasp_pose, grasp_pose) in zip(pregrasp_poses, grasp_poses):
+                 #   draw_functions.draw_grasps([pregrasp_pose, grasp_pose], cluster.header.frame_id, pause = 1)
+                draw_functions.draw_grasps(grasp_poses, cluster.header.frame_id, pause = 1)
+                print "enter the number of the desired pose corresponding to the order it was displayed"
+                print "i.e. press 1 for first grasp, 2 for second grasp, ..."
+                pose_id = raw_input()
+                while pose_id < 0 or pose_id >= len(grasps):
+                	print "invalid input. please select a number between 0 and %d" % len(grasps) - 1
+                	pose_id = raw_input()
+                best_grasp_pose = grasps[pose_id]
+
+            else:
+            	#find the pose with highest success probability
+            	maxProbIndex=probs.index(max(probs))
+            	print "index of best grasp =", maxProbIndex
+            
+            	#get the Pose of the best grasp
+            	best_grasp_pose=grasps[maxProbIndex].grasp_pose.pose
+            	print "displaying the selected grasp..."
+            	draw_functions.draw_grasps([grasps[maxProbIndex].grasp_pose], cluster.header.frame_id, pause = 0)
+
+            print "press enter to clear and continue"
+            raw_input()
+            #clear out the grasps drawn
+            draw_functions.clear_grasps(num = 1000)
+
+            #publish best_grasp_pose
+            print best_grasp_pose
+            try:
+            	selected_grasp_publisher(best_grasp_pose)
+            except rospy.ROSInterruptException:
+            	pass

@@ -47,6 +47,9 @@ import moveit_msgs.msg
 from geometry_msgs.msg import PoseStamped, Point, Quaternion, Pose 
 from std_msgs.msg import String
 
+from pr2_gripper_grasp_planner_cluster.srv import pose.srv
+
+
 def selected_grasp_callback(pose):
   rospy.loginfo(rospy.get_caller_id() + "I heard %s", )
 
@@ -140,8 +143,11 @@ def move_wrist_to_pregrasp():
   print "============"
 
   ## Wait for test_pr2_gripper_grasp_planner_cluster to publish selected grasp
-  rospy.Subscriber('selected_grasp', Pose, selected_grasp_callback)
-  rospy.spin() # keeps python from exiting until this node is stopped
+  #rospy.Subscriber('selected_grasp', Pose, selected_grasp_callback)
+  #rospy.spin() # keeps python from exiting until this node is stopped
+
+
+
 
   moveit_commander.roscpp_shutdown()
 
