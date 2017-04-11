@@ -42,6 +42,7 @@ import sys
 import copy
 import rospy
 import moveit_commander
+import moveit_python
 import moveit_msgs.msg
 import tf.transformations
 import scipy
@@ -56,13 +57,14 @@ def plan_movement(pose, group, robot, dtp):
   print "============ Generating plan"
   print pose
   pose_target = Pose() #geometry_msgs.msg.Pose()
-  pose_target.orientation.w =  pose.orientation.w # 1.0
+  #pose_target.orientation.w =  pose.orientation.w # 1.0
+  pose_target.orientation =  pose.orientation  
   pose_target.position.x = pose.position.x # 0
   pose_target.position.y = pose.position.y # .2
   pose_target.position.z = pose.position.z # .9
   group.set_pose_target(pose_target)
-  #group.max_velocity_scaling_factor(0.1)
-  #group.max_acceleration_scaling_factor(0.1)
+  group.set_max_velocity_scaling_factor(0.2)
+  #group.set_max_acceleration_scaling_factor(0.1)
 
   ## Now, we call the planner to compute the plan
   ## and visualize it if successful
@@ -111,9 +113,11 @@ def compute_pregrasp(pose):
   orientation = pose.orientation
   quat = [orientation.x, orientation.y, orientation.z, orientation.w]
   mat = tf.transformations.quaternion_matrix(quat)
+  print "mat = ", mat
   start = [pose.position.x, pose.position.y, pose.position.z]
+  print "original post=",start
   pregrasp_poseList = list(mat[:,0][0:3]*DISTANCE_FROM_GRASP_POSE + scipy.array(start))
-  print(pregrasp_poseList)
+  print "pregrasp pose=", pregrasp_poseList
   pose.position.x = pregrasp_poseList[0]
   pose.position.y = pregrasp_poseList[1]
   pose.position.z = pregrasp_poseList[2]
@@ -140,6 +144,7 @@ def move_wrist_to_pregrasp():
   ## arm.  This interface can be used to plan and execute motions on the left
   ## arm.
   group = moveit_commander.MoveGroupCommander("manipulator")
+  #group = moveit_python.MoveGroupCommander("manipulator")
 
 
   ## We create this DisplayTrajectory publisher which is used below to publish
