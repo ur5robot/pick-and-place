@@ -3,3 +3,6 @@
 
 #the pose of the box frame
 geometry_msgs/Pose pose
+
+#the dimensions of the box
+geometry_msgs/Vector3 box_dims
