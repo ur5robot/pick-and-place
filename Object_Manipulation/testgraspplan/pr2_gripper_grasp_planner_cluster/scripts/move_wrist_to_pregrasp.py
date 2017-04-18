@@ -46,7 +46,7 @@ import moveit_python
 import moveit_msgs.msg
 import tf.transformations
 import scipy
-from geometry_msgs.msg import PoseStamped, Point, Quaternion, Pose 
+from geometry_msgs.msg import PoseStamped, Point, Quaternion, Pose, Vector3 
 from std_msgs.msg import String
 from pr2_gripper_grasp_planner_cluster.srv import GraspPose, GraspPoseRequest
 
@@ -55,7 +55,7 @@ def move_to_pose(pose, group, robot, dtp):
 
   ## Planning to a Pose goal
   print "============ Generating plan"
-  print pose
+  #print pose
   pose_target = Pose() #geometry_msgs.msg.Pose()
   #pose_target.orientation.w =  pose.orientation.w # 1.0
   pose_target.orientation =  pose.orientation  
@@ -93,7 +93,7 @@ def move_to_pose(pose, group, robot, dtp):
   print "Press y to move robot to goal state. Press any other key to exit."
   if raw_input() == 'y':
     group.go(wait=True)
-    print("SUCCESS: Wrist is in pregrasp position")
+    print("SUCCESS: Wrist is in position")
 
 
 def get_selected_grasp():
@@ -110,18 +110,35 @@ def get_selected_grasp():
 
 def compute_pregrasp(pose):
   DISTANCE_FROM_GRASP_POSE = -0.10 #back the pre-grasp up 10 cm from goal grasp pose
+  pregrasp_pose = Pose() 
+  pregrasp_pose.orientation =  pose.orientation  
+  pregrasp_pose.position.x = pose.position.x # 0
+  pregrasp_pose.position.y = pose.position.y # .2
+  pregrasp_pose.position.z = pose.position.z # .9
   orientation = pose.orientation
   quat = [orientation.x, orientation.y, orientation.z, orientation.w]
   mat = tf.transformations.quaternion_matrix(quat)
-  print "mat = ", mat
+  #print "mat = ", mat
   start = [pose.position.x, pose.position.y, pose.position.z]
-  print "original post=",start
+  #print "original post=",start
   pregrasp_poseList = list(mat[:,0][0:3]*DISTANCE_FROM_GRASP_POSE + scipy.array(start))
-  print "pregrasp pose=", pregrasp_poseList
-  pose.position.x = pregrasp_poseList[0]
-  pose.position.y = pregrasp_poseList[1]
-  pose.position.z = pregrasp_poseList[2]
-  return pose
+  #print "pregrasp pose=", pregrasp_poseList
+  pregrasp_pose.position.x = pregrasp_poseList[0]
+  pregrasp_pose.position.y = pregrasp_poseList[1]
+  pregrasp_pose.position.z = pregrasp_poseList[2]
+  return pregrasp_pose
+
+def attach_object(object_dimensions,pregrasp_pose, grasp_pose, scene, link, object_name, dis):
+  #first determine axis from which gripper will grab
+  #then attach the object specified by its dimensions and distance from link
+  if not pregrasp_pose.position.z - grasp_pose.position.z == 0:
+    scene.attachBox(object_name, object_dimensions.x, object_dimensions.y, object_dimensions.z, 0,0,object_dimensions.z/2+dis, link )
+  elif not pregrasp_pose.position.x - grasp_pose.position.x == 0:
+    scene.attachBox(object_name, object_dimensions.x, object_dimensions.y, object_dimensions.z, object_dimensions.x/2+dis,0,0, link )
+  else:
+    scene.attachBox(object_name, object_dimensions.x, object_dimensions.y, object_dimensions.z, 0,object_dimensions.y/2+dis,0, link )
+
+
 
 
 def pick_and_place():
@@ -184,16 +201,25 @@ def pick_and_place():
 
   grasp_pose, object_dimensions = get_selected_grasp()  #get best pre-grasp pose
 
-  print object_dimensions
+  #print "object dimensions:"
+  #print object_dimensions.x, object_dimensions.y, object_dimensions.z 
 
-  pregrasp_pose=compute_pregrasp(grasp_pose)  
+
+  pregrasp_pose=compute_pregrasp(grasp_pose) 
+
+  scene.removeAttachedObject("mybox")
   move_to_pose(pregrasp_pose, group, robot, display_trajectory_publisher)  #move to 
-  #move_to_pose(grasp_pose, group, robot, display_trajectory_publisher)
+  move_to_pose(grasp_pose, group, robot, display_trajectory_publisher)
   #close_gripper()  To Do
-  scene.attachBox("mybox", 0.1, .1, 0.1, 0,0,0.1, "tool0" )
+  attach_object(object_dimensions,pregrasp_pose, grasp_pose, scene, "tool0", "mybox", 0.01)
+  #scene.attachBox("mybox", object_dimensions.x, object_dimensions.y, object_dimensions.z, 0,0,object_dimensions.z/2+0.03, "tool0" )
+  print "grasp_pose", grasp_pose
+  print "pregrasp_pose", pregrasp_pose
   move_to_pose(pregrasp_pose, group, robot, display_trajectory_publisher)
+
   #move_to_pose(new_pose, group, robot, display_trajectory_publisher)  #To Do
 
+  #scene.removeAttachedObject("mybox")
 
 
 

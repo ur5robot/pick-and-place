@@ -262,12 +262,12 @@ def handle_selected_grasp(req):
             draw_functions.clear_grasps(num = 1000)
 
             #publish best_grasp_pose
-            print "sent."
+            print "Succesfully sent pose and bounding box"
             #return GraspPoseResponse(best_grasp_pose, box_dims)
             pose=best_grasp_pose
 
-            print pose
-            print box_dims
+            #print pose
+            #print box_dims
             return GraspPoseResponse(pose, box_dims)   
             '''
             print best_grasp_pose
