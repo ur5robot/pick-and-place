@@ -10,6 +10,8 @@
 #include <tf/transform_broadcaster.h>
 #include <vector>
 #include <fstream>
+#include <iostream>
+#include <ros/console.h>
 
 using namespace std;
 
@@ -26,13 +28,16 @@ int main(int argc, char** argv){
   std::ifstream infile("kinect_calibration.txt");  
   double num;
   int i=0;
+  cout<<"\n";
+  cout<<"kinect_calibration vector: \n";
   while (infile >> num)
   {
     tfvector.push_back (num);
-    cout<<tfvector[i];
+    cout<<tfvector[i]<<" ";
     i++;
   }
-
+ 
+  cout<<"\n\nSuccess. Publishing kinect_calibration transform now.\n";
 
   //publish transform from /world to /camera_link
   ros::Rate rate(10.0);

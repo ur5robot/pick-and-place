@@ -263,7 +263,12 @@ def handle_selected_grasp(req):
 
             #publish best_grasp_pose
             print "sent."
-            return GraspPoseResponse(best_grasp_pose, box_dims)  
+            #return GraspPoseResponse(best_grasp_pose, box_dims)
+            pose=best_grasp_pose
+
+            print pose
+            print box_dims
+            return GraspPoseResponse(pose, box_dims)   
             '''
             print best_grasp_pose
             try:

@@ -51,7 +51,7 @@ from std_msgs.msg import String
 from pr2_gripper_grasp_planner_cluster.srv import GraspPose, GraspPoseRequest
 
 
-def plan_movement(pose, group, robot, dtp):
+def move_to_pose(pose, group, robot, dtp):
 
   ## Planning to a Pose goal
   print "============ Generating plan"
@@ -103,7 +103,7 @@ def get_selected_grasp():
       selected_grasp = rospy.ServiceProxy('selected_grasp', GraspPose)
       resp1 = selected_grasp()
       print "Received."
-      return resp1.pose
+      return (resp1.pose, resp1.box_dims)  #Need to change this
   except rospy.ServiceException, e:
       print "Service call failed: %s"%e
 
@@ -124,7 +124,7 @@ def compute_pregrasp(pose):
   return pose
 
 
-def move_wrist_to_pregrasp():
+def pick_and_place():
 
   ## First initialize moveit_commander and rospy.
   print "============ Starting tutorial setup"
@@ -137,7 +137,7 @@ def move_wrist_to_pregrasp():
 
   ## Instantiate a PlanningSceneInterface object.  This object is an interface
   ## to the world surrounding the robot.
-  scene = moveit_commander.PlanningSceneInterface()
+  scene = moveit_python.PlanningSceneInterface("base_link")
 
   ## Instantiate a MoveGroupCommander object.  This object is an interface
   ## to one group of joints.  In this case the group is the joints in the left
@@ -145,7 +145,6 @@ def move_wrist_to_pregrasp():
   ## arm.
   group = moveit_commander.MoveGroupCommander("manipulator")
   #group = moveit_python.MoveGroupCommander("manipulator")
-
 
   ## We create this DisplayTrajectory publisher which is used below to publish
   ## trajectories for RVIZ to visualize.
@@ -168,23 +167,45 @@ def move_wrist_to_pregrasp():
   print "============ Reference frame: %s" % group.get_end_effector_link()
 
   ## We can get a list of all the groups in the robot
-  print "============ Robot Groups:"
-  print robot.get_group_names()
+  #print "============ Robot Groups:"
+  #print robot.get_group_names()
 
   ## Sometimes for debugging it is useful to print the entire state of the
   ## robot.
-  print "============ Printing robot state"
-  print robot.get_current_state()
+  #print "============ Printing robot state"
+  #print robot.get_current_state()
   print "============"
 
   ## Wait for test_pr2_gripper_grasp_planner_cluster to publish selected grasp
   #rospy.Subscriber('selected_grasp', Pose, selected_grasp_callback)
   #rospy.spin() # keeps python from exiting until this node is stopped
 
+   
 
-  grasp_pose=get_selected_grasp()  #get best pre-grasp pose
-  pregrasp_pose=compute_pregrasp(grasp_pose)
-  plan_movement(pregrasp_pose, group, robot, display_trajectory_publisher) 
+  grasp_pose, object_dimensions = get_selected_grasp()  #get best pre-grasp pose
+
+  print object_dimensions
+
+  pregrasp_pose=compute_pregrasp(grasp_pose)  
+  move_to_pose(pregrasp_pose, group, robot, display_trajectory_publisher)  #move to 
+  #move_to_pose(grasp_pose, group, robot, display_trajectory_publisher)
+  #close_gripper()  To Do
+  scene.attachBox("mybox", 0.1, .1, 0.1, 0,0,0.1, "tool0" )
+  move_to_pose(pregrasp_pose, group, robot, display_trajectory_publisher)
+  #move_to_pose(new_pose, group, robot, display_trajectory_publisher)  #To Do
+
+
+
+
+
+
+  #Attach object to gripper 
+  #p = moveit_python.PlanningSceneInterface("base_link")
+  #p.addCube("my_cube", 0.1, 1, 0, 0.5)
+  
+ 
+
+
 
   moveit_commander.roscpp_shutdown()
 
@@ -195,6 +216,6 @@ def move_wrist_to_pregrasp():
 
 if __name__=='__main__':
   try:
-    move_wrist_to_pregrasp()
+    pick_and_place()
   except rospy.ROSInterruptException:
     pass
