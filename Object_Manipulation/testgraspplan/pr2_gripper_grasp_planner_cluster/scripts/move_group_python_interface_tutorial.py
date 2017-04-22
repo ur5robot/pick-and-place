@@ -44,6 +44,7 @@ import rospy
 import moveit_commander
 import moveit_msgs.msg
 import geometry_msgs.msg
+import tf
 ## END_SUB_TUTORIAL
 
 from std_msgs.msg import String
@@ -112,13 +113,27 @@ def move_group_python_interface_tutorial():
   ## We can plan a motion for this group to a desired pose for the 
   ## end-effector
   print "============ Generating plan 1"
+  # Here I am making it go to some Pose (recall Pose has coordinates(x,y,z) 
+  # as well as orientation (quaternions) )
+  # My robot is in the up position to start and this Pose will make its
+  # wrist dip down by 1.0-0.9=0.1 meters i.e. position.z
   pose_target = geometry_msgs.msg.Pose()
-  pose_target.orientation.w = 1.0
-  pose_target.position.x = 0
-  pose_target.position.y = .2
-  pose_target.position.z = .9
-  group.set_pose_target(pose_target)
+  quaternion = tf.transformations.quaternion_from_euler(0, 0, 0)
 
+  pose_target.orientation.x = quaternion[0]
+  pose_target.orientation.y = quaternion[1]
+  pose_target.orientation.z = quaternion[2]
+  pose_target.orientation.w = quaternion[3]
+  pose_target.position.x = 0
+  pose_target.position.y = 0.2
+  pose_target.position.z = 0.8
+  
+  #tell ur5 that you want it to go to the Pose
+  group.set_pose_target(pose_target)  
+
+  #if you don't have this line, the robot will go too fast and emergency stop
+  group.set_max_velocity_scaling_factor(0.2) 
+  
   ## Now, we call the planner to compute the plan
   ## and visualize it if successful
   ## Note that we are just planning, not asking move_group 
@@ -126,7 +141,7 @@ def move_group_python_interface_tutorial():
   plan1 = group.plan()
 
   print "============ Waiting while RVIZ displays plan1..."
-  rospy.sleep(5)
+  rospy.sleep(0.5)
 
  
   ## You can ask RVIZ to visualize a plan (aka trajectory) for you.  But the
@@ -140,7 +155,7 @@ def move_group_python_interface_tutorial():
   display_trajectory_publisher.publish(display_trajectory);
 
   print "============ Waiting while plan1 is visualized (again)..."
-  rospy.sleep(5)
+  rospy.sleep(0.5)
 
 
   ## Moving to a pose goal

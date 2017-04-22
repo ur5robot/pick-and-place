@@ -63,7 +63,7 @@ def move_to_pose(pose, group, robot, dtp):
   pose_target.position.y = pose.position.y # .2
   pose_target.position.z = pose.position.z # .9
   group.set_pose_target(pose_target)
-  group.set_max_velocity_scaling_factor(0.2)
+  group.set_max_velocity_scaling_factor(0.3)
   #group.set_max_acceleration_scaling_factor(0.1)
 
   ## Now, we call the planner to compute the plan
@@ -73,7 +73,7 @@ def move_to_pose(pose, group, robot, dtp):
   plan = group.plan()
 
   print "============ Waiting while RVIZ displays pose..."
-  rospy.sleep(2)
+  #rospy.sleep(2)
 
  
   ## You can ask RVIZ to visualize a plan (aka trajectory) for you.  But the
@@ -87,7 +87,7 @@ def move_to_pose(pose, group, robot, dtp):
   dtp.publish(display_trajectory);
 
   print "============ Waiting while pose is visualized (again)..."
-  rospy.sleep(1)
+  #rospy.sleep(1)
 
   ## Moving to a pose goal
   print "Press y to move robot to goal state. Press any other key to exit."
@@ -112,9 +112,9 @@ def compute_pregrasp(pose):
   DISTANCE_FROM_GRASP_POSE = -0.10 #back the pre-grasp up 10 cm from goal grasp pose
   pregrasp_pose = Pose() 
   pregrasp_pose.orientation =  pose.orientation  
-  pregrasp_pose.position.x = pose.position.x # 0
-  pregrasp_pose.position.y = pose.position.y # .2
-  pregrasp_pose.position.z = pose.position.z # .9
+  pregrasp_pose.position.x = pose.position.x 
+  pregrasp_pose.position.y = pose.position.y 
+  pregrasp_pose.position.z = pose.position.z 
   orientation = pose.orientation
   quat = [orientation.x, orientation.y, orientation.z, orientation.w]
   mat = tf.transformations.quaternion_matrix(quat)
@@ -200,36 +200,68 @@ def pick_and_place():
    
 
   grasp_pose, object_dimensions = get_selected_grasp()  #get best pre-grasp pose
-
   #print "object dimensions:"
   #print object_dimensions.x, object_dimensions.y, object_dimensions.z 
 
-
+  #compute the pregrasp
   pregrasp_pose=compute_pregrasp(grasp_pose) 
 
-  scene.removeAttachedObject("mybox")
-  move_to_pose(pregrasp_pose, group, robot, display_trajectory_publisher)  #move to 
-  move_to_pose(grasp_pose, group, robot, display_trajectory_publisher)
-  #close_gripper()  To Do
-  attach_object(object_dimensions,pregrasp_pose, grasp_pose, scene, "tool0", "mybox", 0.01)
-  #scene.attachBox("mybox", object_dimensions.x, object_dimensions.y, object_dimensions.z, 0,0,object_dimensions.z/2+0.03, "tool0" )
-  print "grasp_pose", grasp_pose
-  print "pregrasp_pose", pregrasp_pose
-  move_to_pose(pregrasp_pose, group, robot, display_trajectory_publisher)
-
-  #move_to_pose(new_pose, group, robot, display_trajectory_publisher)  #To Do
-
-  #scene.removeAttachedObject("mybox")
-
-
-
-
-
-  #Attach object to gripper 
-  #p = moveit_python.PlanningSceneInterface("base_link")
-  #p.addCube("my_cube", 0.1, 1, 0, 0.5)
+  move_to_pose(pregrasp_pose, group, robot, display_trajectory_publisher)  #move to pregrasp
+  move_to_pose(grasp_pose, group, robot, display_trajectory_publisher)  #move to grasp
   
+  """ To Do Close Gripper """
+  #close_gripper()  To Do
+
+  #"attach object to ur5 in order to have successful motion planning"
+  attach_object(object_dimensions,pregrasp_pose, grasp_pose, scene, "tool0", "mybox", 0.01)
+  move_to_pose(pregrasp_pose, group, robot, display_trajectory_publisher) #move back to pregrasp pose
+
+  #move ur5 to a neutral position
+  up_pose = Pose()
+  quaternion = tf.transformations.quaternion_from_euler(0, 0, 0)
+  up_pose.orientation.x = quaternion[0]
+  up_pose.orientation.y = quaternion[1]
+  up_pose.orientation.z = quaternion[2]
+  up_pose.orientation.w = quaternion[3]
+  up_pose.position.x = 0
+  up_pose.position.y = .2
+  up_pose.position.z = 0.8
+  print "MOVING TO NEUTRAL UP POSITION"
+  move_to_pose(up_pose, group, robot, display_trajectory_publisher)
+
+  # X and Y coordinates of where object should be placed
+  PLACE_X=0.5
+  PLACE_Y=-0.3
+
+  print "MOVING TO PRE RELEASE POSE"
+  # even though we are releasing the object, still use grasp poses
+  #change the x and y coordinates of the pregrasp pose
+  pregrasp_pose.position.x=PLACE_X
+  pregrasp_pose.position.y=PLACE_Y
+  move_to_pose(pregrasp_pose, group, robot, display_trajectory_publisher)
+  
+  
+
+  print "MOVING TO RELEASE POSE"
+  #change the x and y coordinates of the grasp pose
+  pregrasp_pose.position.z=pregrasp_pose.position.z-0.1
+  move_to_pose(pregrasp_pose, group, robot, display_trajectory_publisher)
  
+  # "remove" the object from the robot
+  scene.removeAttachedObject("mybox")
+  
+  """ To Do Open Gripper """
+  #open_gripper()  To Do
+
+
+
+  print "MOVING TO NEUTRAL UP POSITION"
+  #move back up to a neutral position awaiting next command
+  move_to_pose(up_pose, group, robot, display_trajectory_publisher)
+
+  print "SUCCESS"
+
+  
 
 
 
