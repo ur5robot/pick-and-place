@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(grasp_planner_cluster)
+project(pick_and_place_executive)
 
 ## Add support for C++11, supported in ROS Kinetic and newer
 # add_definitions(-std=c++11)
@@ -57,30 +57,29 @@ find_package(catkin REQUIRED COMPONENTS
 ##   * add every package in MSG_DEP_SET to generate_messages(DEPENDENCIES ...)
 
 ## Generate messages in the 'msg' folder
- add_message_files(
-   FILES
-   AttachedCollisionObject.msg
-   CollisionObject.msg
-   CollisionObjectOperation.msg
-   MakeStaticCollisionMapAction.msg
-   MakeStaticCollisionMapActionFeedback.msg
-   MakeStaticCollisionMapActionGoal.msg
-   MakeStaticCollisionMapActionResult.msg
-   MakeStaticCollisionMapFeedback.msg
-   MakeStaticCollisionMapGoal.msg
-   MakeStaticCollisionMapResult.msg
-   SetPlanningSceneDiff.msg
-   Shape.msg
- )
-
+# add_message_files(
+#   FILES
+#   AttachedCollisionObject.msg
+#   CollisionObject.msg
+#   CollisionObjectOperation.msg
+#   MakeStaticCollisionMapAction.msg
+#   MakeStaticCollisionMapActionFeedback.msg
+#   MakeStaticCollisionMapActionGoal.msg
+#   MakeStaticCollisionMapActionResult.msg
+#   MakeStaticCollisionMapFeedback.msg
+#   MakeStaticCollisionMapGoal.msg
+#   MakeStaticCollisionMapResult.msg
+#   SetPlanningSceneDiff.msg
+#   Shape.msg
+# )
 
 ## Generate services in the 'srv' folder
- add_service_files(
-   FILES
-   SetPointClusterGraspParams.srv
-   FindClusterBoundingBox.srv
-   FindClusterBoundingBox2.srv
- )
+# add_service_files(
+#   FILES
+#   SetPointClusterGraspParams.srv
+#   FindClusterBoundingBox.srv
+#   FindClusterBoundingBox2.srv
+# )
 
 ## Generate actions in the 'action' folder
 # add_action_files(
@@ -130,8 +129,8 @@ find_package(catkin REQUIRED COMPONENTS
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
 #  INCLUDE_DIRS include
-#  LIBRARIES grasp_planner_cluster
-CATKIN_DEPENDS message_runtime actionlib geometry_msgs manipulation_msgs roscpp rospy std_msgs tf visualization_msgs
+#  LIBRARIES pick_and_place_executive
+  CATKIN_DEPENDS message_runtime actionlib geometry_msgs manipulation_msgs roscpp rospy std_msgs tf visualization_msgs
 #  DEPENDS system_lib
 )
 
@@ -148,7 +147,7 @@ include_directories(
 
 ## Declare a C++ library
 # add_library(${PROJECT_NAME}
-#   src/${PROJECT_NAME}/grasp_planner_cluster.cpp
+#   src/${PROJECT_NAME}/pick_and_place_executive.cpp
 # )
 
 ## Add cmake target dependencies of the library
@@ -159,7 +158,7 @@ include_directories(
 ## Declare a C++ executable
 ## With catkin_make all packages are built within a single CMake context
 ## The recommended prefix ensures that target names across packages don't collide
-# add_executable(${PROJECT_NAME}_node src/grasp_planner_cluster_node.cpp)
+# add_executable(${PROJECT_NAME}_node src/pick_and_place_executive_node.cpp)
 
 ## Rename C++ executable without prefix
 ## The above recommended prefix causes long target names, the following renames the
@@ -216,7 +215,7 @@ include_directories(
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_grasp_planner_cluster.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_pick_and_place_executive.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()

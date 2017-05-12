@@ -36,13 +36,8 @@
 ## @package ik_utilities
 #Utility functions for doing inverse kinematics, forward kinematics, checking a Cartesian path
 
+#import roslib; roslib.load_manifest('interpolated_ik_motion_planner')
 import rospy
-import math
-import random
-import time
-import tf
-import numpy
-import pdb
 from kinematics_msgs.srv import GetKinematicSolverInfo, GetPositionIK, GetPositionFK, GetConstraintAwarePositionIK, GetConstraintAwarePositionIKRequest
 from kinematics_msgs.msg import PositionIKRequest
 from geometry_msgs.msg import PoseStamped, Pose, Point, Quaternion, PointStamped, Vector3Stamped
@@ -50,7 +45,12 @@ from visualization_msgs.msg import Marker
 from motion_planning_msgs.msg import RobotState, MultiDOFJointState, ArmNavigationErrorCodes
 from planning_environment_msgs.srv import GetStateValidity, GetStateValidityRequest
 from sensor_msgs.msg import JointState
-
+import math
+import random
+import time
+import tf
+import numpy
+import pdb
 
 #pretty-print list to string
 def pplist(list):

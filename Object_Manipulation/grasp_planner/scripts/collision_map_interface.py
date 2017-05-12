@@ -38,22 +38,23 @@
 # Functions that take and reset the collision map, and add, remove, attach
 # or detach objects
 
-import random
-import time
-import math
-import scipy
-import pdb
+#import roslib; roslib.load_manifest('tabletop_collision_map_processing')
+import random, time, math, scipy, pdb
 import rospy
-import actionlib
-import tf
+#from arm_navigation_msgs.msg import Shape
+from pr2_gripper_grasp_planner_cluster.msg import Shape
+from tabletop_object_detector.msg import Table
+#from arm_navigation_msgs.msg import MakeStaticCollisionMapAction, MakeStaticCollisionMapGoal
+from pr2_gripper_grasp_planner_cluster.msg import MakeStaticCollisionMapAction, MakeStaticCollisionMapGoal
+#from arm_navigation_msgs.msg import CollisionObject, AttachedCollisionObject, CollisionObjectOperation
+from pr2_gripper_grasp_planner_cluster.msg import AttachedCollisionObject, CollisionObject, CollisionObjectOperation
 from actionlib_msgs.msg import GoalStatus
 from std_srvs.srv import Empty, EmptyRequest
+import actionlib
+import tf
 from geometry_msgs.msg import PoseStamped, Point, Quaternion, Pose
-from tabletop_object_detector.msg import Table
-from grasp_planner_cluster.msg import Shape
-from grasp_planner_cluster.msg import MakeStaticCollisionMapAction, MakeStaticCollisionMapGoal
-from grasp_planner_cluster.msg import AttachedCollisionObject, CollisionObject, CollisionObjectOperation
-
+#from arm_navigation_msgs.srv import SetPlanningSceneDiff, SetPlanningSceneDiffRequest
+#from pr2_gripper_grasp_planner_cluster.msg import SetPlanningSceneDiff, SetPlanningSceneDiffRequest
 
 #interface to the collision map
 class CollisionMapInterface():

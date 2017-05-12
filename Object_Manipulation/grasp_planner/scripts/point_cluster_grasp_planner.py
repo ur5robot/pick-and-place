@@ -39,21 +39,26 @@
 
 from __future__ import division
 import roslib
+#roslib.load_manifest('pr2_gripper_grasp_planner_cluster')
 import rospy
 import scipy
 import pdb
 import random
 import math
-import time
 import scipy.linalg
-import tf.transformations
-import convert_functions
-import draw_functions
-import cluster_bounding_box_finder
 from geometry_msgs.msg import PoseStamped, Point, Pose, Vector3
 from sensor_msgs.msg import JointState
 from visualization_msgs.msg import Marker
-
+#from interpolated_ik_motion_planner import ik_utilities
+#import ik_utilities
+import tf.transformations
+#from object_manipulator.convert_functions import *
+import convert_functions
+#import object_manipulator.draw_functions as draw_functions
+import draw_functions
+#import object_manipulator.cluster_bounding_box_finder as cluster_bounding_box_finder
+import cluster_bounding_box_finder
+import time
 
 '''
 some dimensions:

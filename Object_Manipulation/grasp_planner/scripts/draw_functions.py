@@ -38,14 +38,16 @@
 
 from __future__ import division
 import roslib
+#roslib.load_manifest('object_manipulator')
 import rospy
+
+from visualization_msgs.msg import Marker
+from geometry_msgs.msg import PoseStamped, Pose, Point, Quaternion
 import tf.transformations
 import scipy
 import math
 import time
 import pdb
-from visualization_msgs.msg import Marker
-from geometry_msgs.msg import PoseStamped, Pose, Point, Quaternion
 from convert_functions import *
 
 ##class to draw stuff to rviz

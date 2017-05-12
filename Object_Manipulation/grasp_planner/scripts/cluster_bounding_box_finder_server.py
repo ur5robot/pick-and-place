@@ -39,15 +39,17 @@
 
 from __future__ import division
 import roslib
+#roslib.load_manifest('object_manipulator')
 import rospy
+from pr2_gripper_grasp_planner_cluster.srv import FindClusterBoundingBox, FindClusterBoundingBoxResponse, \
+                   FindClusterBoundingBox2, FindClusterBoundingBox2Response
 import cluster_bounding_box_finder
 import cluster_bounding_box_finder_3d
 import scipy
 import convert_functions
 import tf
+#import collision_map_interface
 from geometry_msgs.msg import PoseStamped, Point, Quaternion, Pose, Vector3
-from grasp_planner_cluster.srv import FindClusterBoundingBox, FindClusterBoundingBoxResponse
-from grasp_planner_cluster.srv import FindClusterBoundingBox2, FindClusterBoundingBox2Response
 
 
 ##class for the find cluster bounding box service

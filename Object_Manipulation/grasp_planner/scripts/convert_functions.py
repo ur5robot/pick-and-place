@@ -39,18 +39,18 @@
 
 from __future__ import division
 import roslib
+#roslib.load_manifest('object_manipulator')
 import rospy
+from geometry_msgs.msg import Transform, Pose, PoseStamped, Point, Point32, PointStamped, Vector3, Vector3Stamped, Quaternion, QuaternionStamped
+from sensor_msgs.msg import PointCloud
+from std_msgs.msg import Header
 import tf.transformations
 import tf
 import numpy as np
 import scipy
-import point_cloud
 from sensor_msgs.msg import PointCloud, PointCloud2
-from geometry_msgs.msg import Transform, Pose, PoseStamped
-from geometry_msgs.msg import Point, Point32, PointStamped
-from geometry_msgs.msg import Vector3, Vector3Stamped
-from geometry_msgs.msg import Quaternion, QuaternionStamped
-from std_msgs.msg import Header
+#from object_manipulator.point_cloud import *
+import point_cloud
 
 ##convert a PointCloud or PointCloud2 to a 4xn scipy matrix (x y z 1)
 def point_cloud_to_mat(point_cloud):

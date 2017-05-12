@@ -37,18 +37,20 @@
 # Server for the point_cluster_grasp_planner
 
 import roslib
+#roslib.load_manifest('pr2_gripper_grasp_planner_cluster')
 import rospy
 import actionlib
-import random
-import pdb
-import convert_functions
-import time
-import point_cluster_grasp_planner as grasp_planner_cluster
 from manipulation_msgs.srv import GraspPlanning, GraspPlanningResponse
 from manipulation_msgs.msg import Grasp, GraspPlanningAction, GraspPlanningErrorCode, GraspPlanningResult, GripperTranslation
+from pr2_gripper_grasp_planner_cluster.srv import SetPointClusterGraspParams, SetPointClusterGraspParamsResponse
+#import pr2_gripper_grasp_planner_cluster.point_cluster_grasp_planner as grasp_planner_cluster
+import point_cluster_grasp_planner as grasp_planner_cluster
 from sensor_msgs.msg import JointState
-from grasp_planner_cluster.srv import SetPointClusterGraspParams, SetPointClusterGraspParamsResponse
-
+import random
+import pdb
+#from object_manipulator.convert_functions import *
+import convert_functions
+import time
 
 ##class for the point cluster grasp planner service
 class PointClusterGraspPlannerServer:

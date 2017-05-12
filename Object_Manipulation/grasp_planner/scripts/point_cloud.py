@@ -6,9 +6,12 @@ Serialization of sensor_msgs.PointCloud2 messages.
 Author: Tim Field
 """
 
+#import roslib; roslib.load_manifest('sensor_msgs')
+
 import ctypes
 import math
 import struct
+
 from sensor_msgs.msg import PointCloud2, PointField
 
 _DATATYPES = {}
